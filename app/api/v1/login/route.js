@@ -5,6 +5,6 @@ export const POST = async (req)=>{
     console.log('Request',request);
     
     return NextResponse.json({
-        message : 'Hello from the server'
+        message : 'Hello from the login endpoint'
     })
 }

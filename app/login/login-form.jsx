@@ -25,6 +25,8 @@ export default function LoginForm () {
 
     const response = await loginUser({ email: email, password: password });
     console.log('response',response);
+
+  
   }
 
   return (
