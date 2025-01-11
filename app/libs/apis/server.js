@@ -23,7 +23,6 @@ export default loginUser;
 export const getMovies = async () => {
     try{
         const response = await api.get("movies");
-        console.log('Response',response);
         return response.json();
 
     }
