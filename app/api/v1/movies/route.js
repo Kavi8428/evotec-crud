@@ -9,7 +9,7 @@ export const GET = async () => {
     .collection('movies')
     .find({})
     .sort({})
-    .limit(10)
+    .limit(20)
     .toArray();
 
     return NextResponse.json({
