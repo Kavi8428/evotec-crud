@@ -1,11 +1,14 @@
 // This file for client component
 'use client'
+import { use, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { register } from '@/lib/apis/server' 
+import { useToast } from "@/hooks/use-toast"
 import { Button } from '@/components/ui/button'
-import { Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Loader2 } from 'lucide-react'
 import {
   Card,
   CardContent,
@@ -14,8 +17,8 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
-import { use, useState } from 'react'
-import { register } from '../libs/apis/server'
+import { ToastAction } from '@radix-ui/react-toast'
+
 
 export default function RegisterPage () {
   const [fullName, fullNameHolder] = useState('')
@@ -29,7 +32,8 @@ export default function RegisterPage () {
     massage: ''
   }
   const [error, setError] = useState(DEFAULT_ERROR)
-  const [isLoading, setLoading] = useState(false)
+  const [isLoading, setLoading] = useState(false);
+  const { toast } = useToast()
 
   const submit = async event => {
     event.preventDefault()
@@ -58,6 +62,12 @@ export default function RegisterPage () {
           setError({
             error: false,
             massage: 'Successfully Registered'
+          })
+          toast({
+            variant : 'success',
+            title : 'Successfull..!',
+            description: "Welcome to movie hub family.",
+            action : <ToastAction altText='loging here'  className=' px-2 rounded-md bg-green-400 hover:ring-2 hover:bg-green-900/45' >Login</ToastAction>
           })
         } else {
           setError({

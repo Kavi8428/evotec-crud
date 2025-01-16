@@ -1,4 +1,4 @@
-import dbConnection from '@/app/libs/mongodb'
+import dbConnection from '@/lib/mongodb'
 import { NextResponse } from 'next/server'
 
 export const GET = async () => {
