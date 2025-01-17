@@ -3,8 +3,8 @@
 import { use, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { register } from '@/lib/apis/server' 
-import { useToast } from "@/hooks/use-toast"
+// import { register } from '@/lib/apis/server'
+import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -17,8 +17,8 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
-import { ToastAction } from '@radix-ui/react-toast'
-
+import { signUp } from '@/lib/auth-client'
+// import { ToastAction } from '@radix-ui/react-toast'
 
 export default function RegisterPage () {
   const [fullName, fullNameHolder] = useState('')
@@ -32,7 +32,7 @@ export default function RegisterPage () {
     massage: ''
   }
   const [error, setError] = useState(DEFAULT_ERROR)
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false)
   const { toast } = useToast()
 
   const submit = async event => {
@@ -44,36 +44,70 @@ export default function RegisterPage () {
     const password = formData.get('password').toString()
     const conPassword = formData.get('conPassword').toString()
 
-    // console.log(fullName,userName,email,password,conPassword);
-
     if (fullName && userName && email && password && conPassword) {
       if (password === conPassword) {
         setLoading(true)
         setError(DEFAULT_ERROR)
-        const serverResponse = await register({
-          fullName,
-          userName,
-          email,
-          password
-        })
-        setLoading(false)
+        // const serverResponse = await register({
+        //   fullName,
+        //   userName,
+        //   email,
+        //   password
+        // })
+        // setLoading(false)
 
-        if (serverResponse?.success === true) {
-          setError({
-            error: false,
-            massage: 'Successfully Registered'
-          })
-          toast({
-            variant : 'success',
-            title : 'Successfull..!',
-            description: "Welcome to movie hub family.",
-            action : <ToastAction altText='loging here'  className=' px-2 rounded-md bg-green-400 hover:ring-2 hover:bg-green-900/45' >Login</ToastAction>
-          })
+        // if (serverResponse?.success === true) {
+        //   setError({
+        //     error: false,
+        //     massage: 'Successfully Registered'
+        //   })
+        //   toast({
+        //     variant : 'success',
+        //     title : 'Successfull..!',
+        //     description: "Welcome to movie hub family.",
+        //     action : <ToastAction altText='loging here'  className=' px-2 rounded-md bg-green-400 hover:ring-2 hover:bg-green-900/45' >Login</ToastAction>
+        //   })
+        // } else {
+        //   setError({
+        //     error: true,
+        //     massage: serverResponse.error
+        //   })
+        // }
+
+        const { data, error } = await signUp.email(
+          {
+            email: email,
+            password: password,
+            name: userName,
+            image: undefined
+          },
+          {
+            onRequest: () => {},
+            onSuccess: ctx => {
+              console.log('ctx', ctx)
+              setLoading(false)
+            },
+            onError: ctx => {
+              if (ctx) {
+                setError({
+                  error: true,
+                  massage: ctx.error.message
+                })
+              }
+              setLoading(false)
+            }
+          }
+        )
+
+        if (data) {
+          console.log('Recieved data :', data)
+          setLoading(false)
+        } else if (error) {
+          console.log('Error Received :', error)
+          setLoading(false)
         } else {
-          setError({
-            error: true,
-            massage: serverResponse.error
-          })
+          console.log('Bad Request')
+          setLoading(false)
         }
       } else {
         setError({
@@ -183,7 +217,7 @@ export default function RegisterPage () {
               </div>
               <div>
                 {error?.error == true && (
-                  <span className='flex text-red-600 text-xs justify-start'>
+                  <span className='flex text-red-600 text-xs justify-start animate-pulse duration-99 '>
                     {error.massage}
                   </span>
                 )}
@@ -203,7 +237,7 @@ export default function RegisterPage () {
                 variant='destructive'
                 size='icon'
                 className=' flex-1 font-semibold'
-                disabled = {isLoading}
+                disabled={isLoading}
               >
                 {isLoading && <Loader2 className='animate-spin' />}
                 SUBMIT
