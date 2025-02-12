@@ -13,38 +13,11 @@ import {
   import { Share2, Bookmark, Play } from 'lucide-react'
   import { FaImdb } from "react-icons/fa";
   import { CiTimer } from "react-icons/ci";
-
-  
   export default async function dashboard() {
     const { body } = await getMovies();
     return (
-      <div className='flex flex-col min-h-screen'>
-        {/* Fixed navbar with high z-index */}
-        <nav className='bg-black fixed w-full h-16 flex justify-between items-center px-5 transition-all duration-500 ease-in-out z-50'>
-          <div className='text-white font-bold transform hover:scale-110 transition-transform duration-300 cursor-pointer'>
-            Dashboard
-          </div>
-          <div className='flex items-center'>
-            <div>
-                <input type='search' id='movieSearch' placeholder='search movies' className=' border-2 rounded-md mr-3 pl-1  '></input>
-            </div>
-            <div className='text-white ml-1 mr-5 transform hover:scale-110 transition-transform duration-300 cursor-pointer'>
-              Home
-            </div>
-            <div className='text-white mr-5 transform hover:scale-110 transition-transform duration-300 cursor-pointer'>
-              About
-            </div>
-            <div className='text-white mr-5 transform hover:scale-110 transition-transform duration-300 cursor-pointer'>
-              Services
-            </div>
-            <div className='text-white mr-5 transform hover:scale-110 transition-transform duration-300 cursor-pointer'>
-              Contact
-            </div>
-          </div>
-        </nav>
-        
+      <div className='flex flex-col min-h-screen w-full'>
         {/* Main content with padding-top to account for fixed navbar */}
-        <main className='flex-1 pt-16'>
           <div className='text-white sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 grid gap-8 p-5'>
             {body?.length &&
               body.map(movie => {
@@ -84,7 +57,7 @@ import {
                           {movie?.plot}
                         </CardDescription>
   
-                        <div className="flex items-center gap-4">
+                        <div className="flex justify-between items-center gap-1">
                           <Button 
                             variant="outline" 
                             className="bg-red-500/10 border-red-500/50  text-white flex items-center gap-2"
@@ -92,22 +65,20 @@ import {
                             <Play className="w-4 h-4" /> WATCH TRAILER
                           </Button>
                           
-                          <div className="flex items-center gap-4 ml-auto">
                             <Button variant="ghost" size="icon" className="text-gray-400 hover:text-black">
                               <Bookmark className="w-5 h-5" />
                             </Button>
                             <Button variant="ghost" size="icon" className="text-gray-400 hover:text-black">
                               <Share2 className="w-5 h-5" />
                             </Button>
-                          </div>
                         </div>
                       </div>
                     </Card>
                   </div>
                 )
-              })}
+              })} 
           </div>
-        </main>
-      </div>
+        </div>
+
     )
   }

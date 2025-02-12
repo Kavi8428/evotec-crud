@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
-import loginUser from '../../lib/apis/server'
+import { signIn} from '@/lib/auth-client'
+import { redirect } from 'next/navigation';
 export default function LoginForm () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -23,8 +24,20 @@ export default function LoginForm () {
       setPasswordError('')
     }
 
-    const response = await loginUser({ email: email, password: password });
-    console.log('response',response);
+    await signIn.email({
+      email,
+      password
+    },
+    {
+      onSuccess: ()=>{
+        redirect("/dashboard");
+      },
+      onError : (ctr)=>{
+        console.log('error', ctr);
+    
+      }
+    }
+  )
 
   
   }
