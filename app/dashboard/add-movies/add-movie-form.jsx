@@ -43,26 +43,28 @@ import {
 import { Check, ChevronsUpDown } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
+import { GENRE_OPTIONS, RATING_OPTIONS } from '@/lib/constants'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 
-const GENRE_OPTIONS = [
-  'Action',
-  'Comedy',
-  'Drama',
-  'Science Fiction',
-  'Horror',
-  'Romance',
-  'Thriller',
-  'Documentary',
-  'Animation'
-]
+import {InsertMovie} from '@/lib/actions/movie'
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   director: z.string().min(1, 'Director is required'),
   year: z.string().regex(/^\d{4}$/, 'Year must be a 4-digit number'),
-  genres: z.array(z.string()).min(1, 'Select at least one genre').max(5, 'Select up to 5 genres'),
+  genres: z
+    .array(z.string())
+    .min(1, 'Select at least one genre')
+    .max(5, 'Select up to 5 genres'),
   plot: z.string().min(1, 'Enter at least a sentence for the plot'),
-  banner: z.any().optional()
+  banner: z.any().optional(),
+  rating: z.string().min(1, 'Rating is required')
 })
 
 export default function AddMovieForm () {
@@ -77,7 +79,8 @@ export default function AddMovieForm () {
       year: '',
       genres: [],
       plot: '',
-      banner: ''
+      banner: '',
+      rating: ''
     }
   })
 
@@ -86,24 +89,34 @@ export default function AddMovieForm () {
     startTransition(async () => {
       const formData = new FormData()
       Object.entries(values).forEach(([key, value]) => {
-        console.log(`Key: ${key}, Value: ${value}`); // Debugging line
-        if (key === 'genres') {
-          // Join genres into a string for submission
-          formData.append(key, value.join(', '))
-        } else {
-          formData.append(key, value)
-        }
-      })
+        // console.log(`Key: ${key}, Value: ${value}`) // Debugging line
+        formData.append(key, value);
+      });
 
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
+      let title = formData.get('title');
+      let director = formData.get('director');
+      let year = formData.get('year');
+      let genres = formData.get('genres').split(','); // Split genres if it's a comma-separated string
+      let plot = formData.get('plot');
+      let banner = formData.get('banner');
+      let rating = formData.get('rating');
+
+      console.log('titele:', title, 'director:', director, 'year:', year, 'genres:', genres, 'plot:', plot, 'banner:', banner, 'rating:', rating); // Debugging line
+
+      const response = await InsertMovie({title, director, year, genres, plot, banner, rating});
+      if(response.insertedId){
+        setMessage('Movie added successfully');
+      }else{
+        setMessage('Failed to add movie');
       }
+      console.log(response); // Debugging line to check the response
 
-      // Placeholder for your actual submission logic
-      // const result = await InsertM
-      // if (result.success) { ... }
+      // Now genres should be an array
+
+      
+
     })
-  }
+}
 
   return (
     <div className='flex flex-col items-center justify-center h-full'>
@@ -259,6 +272,33 @@ export default function AddMovieForm () {
               />
               <FormField
                 control={form.control}
+                name='rating'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Rating</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className='w-full'>
+                          <SelectValue placeholder='Select Rating' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {RATING_OPTIONS.map(rating => (
+                            <SelectItem key={rating} value={rating}>
+                              {rating}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name='plot'
                 render={({ field }) => (
                   <FormItem>
@@ -270,9 +310,19 @@ export default function AddMovieForm () {
                   </FormItem>
                 )}
               />
-              <Button type='submit' disabled={isPending}>
-                {isPending ? 'Adding...' : 'Add Movie'}
-              </Button>
+
+              <div className='flex justify-end'>
+                <Button
+                  variant='outline'
+                  onClick={() => form.reset()}
+                  disabled={isPending}
+                >
+                  Reset Form
+                </Button>
+                <Button type='submit' disabled={isPending}>
+                  {isPending ? 'Adding...' : 'Add Movie'}
+                </Button>
+              </div>
             </form>
             {message && <p className='mt-4 text-green-600'>{message}</p>}
           </Form>

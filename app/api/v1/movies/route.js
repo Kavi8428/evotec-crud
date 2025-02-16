@@ -3,10 +3,10 @@ import { NextResponse } from 'next/server'
 
 export const GET = async () => {
   try {
-    const mongo = await dbConnection(); // access db connection that created on libs folder
-    const db = mongo.db("sample_mflix"); // declare the collection sample_mflix that stored in mongoDb
+    const mongo = await dbConnection();
+    const db = mongo.db("sample_mflix");
     const movies = await db
-    .collection('movies')
+    .collection('newMovies')
     .find({})
     .sort({})
     .limit(20)
