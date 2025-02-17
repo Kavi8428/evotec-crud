@@ -6,7 +6,7 @@ export default function DashboardLayout({ children }) {
   return (
     <div className="h-screen flex overflow-hidden">
       <SidebarProvider>
-        <AppSidebar className="w-64" /> {/* Adjust the width here */}
+        <AppSidebar  /> {/* Adjust the width here */}
         <div className='flex flex-col w-full'>
           <header>
             <NavBar />

@@ -61,9 +61,9 @@ const formSchema = z.object({
   genres: z
     .array(z.string())
     .min(1, 'Select at least one genre')
-    .max(5, 'Select up to 5 genres'),
+    .max(4, 'Select up to 4 genres'),
   plot: z.string().min(1, 'Enter at least a sentence for the plot'),
-  banner: z.any().optional(),
+  poster: z.any().optional(),
   rating: z.string().min(1, 'Rating is required')
 })
 
@@ -79,8 +79,9 @@ export default function AddMovieForm () {
       year: '',
       genres: [],
       plot: '',
-      banner: '',
-      rating: ''
+      poster: '',
+      rating: '',
+      runtime: ''
     }
   })
 
@@ -98,12 +99,13 @@ export default function AddMovieForm () {
       let year = formData.get('year');
       let genres = formData.get('genres').split(','); // Split genres if it's a comma-separated string
       let plot = formData.get('plot');
-      let banner = formData.get('banner');
+      let poster = formData.get('poster');
       let rating = formData.get('rating');
+      let runtime = formData.get('runtime');
 
-      console.log('titele:', title, 'director:', director, 'year:', year, 'genres:', genres, 'plot:', plot, 'banner:', banner, 'rating:', rating); // Debugging line
+      // console.log('titele:', title, 'director:', director, 'year:', year, 'genres:', genres, 'plot:', plot, 'banner:', banner, 'rating:', rating); // Debugging line
 
-      const response = await InsertMovie({title, director, year, genres, plot, banner, rating});
+      const response = await InsertMovie({title, director, year, genres, plot, poster, rating, runtime});
       if(response.insertedId){
         setMessage('Movie added successfully');
       }else{
@@ -120,7 +122,7 @@ export default function AddMovieForm () {
 
   return (
     <div className='flex flex-col items-center justify-center h-full'>
-      <Card className='w-1/2 m-1'>
+      <Card className=' m-1 sm:w-full md:w-full lg:w-4/6 xl:3/6'>
         <CardHeader>
           <CardTitle>Add a New Movie</CardTitle>
           <CardDescription>
@@ -188,10 +190,10 @@ export default function AddMovieForm () {
                 />
                 <FormField
                   control={form.control}
-                  name='banner'
+                  name='poster'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Banner</FormLabel>
+                      <FormLabel>Poster</FormLabel>
                       <FormControl>
                         <Input
                           type='text'
@@ -203,6 +205,54 @@ export default function AddMovieForm () {
                     </FormItem>
                   )}
                 />
+              </div>
+              <div className='grid gap-1 w-full sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2'>
+                <FormField
+                  control={form.control}
+                  name='runtime'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Runtime</FormLabel>
+                      <FormControl>
+                        <Input
+                          className='w-50 sm:w-full md:w-full '
+                          type='number'
+                          placeholder='Enter Run Time in Hours'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              <FormField
+                control={form.control}
+                name='rating'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Rating</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className='w-full'>
+                          <SelectValue placeholder='Select Rating' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {RATING_OPTIONS.map(rating => (
+                            <SelectItem key={rating} value={rating}>
+                              {rating}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               </div>
 
               <FormField
@@ -270,33 +320,7 @@ export default function AddMovieForm () {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name='rating'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Rating</FormLabel>
-                    <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className='w-full'>
-                          <SelectValue placeholder='Select Rating' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {RATING_OPTIONS.map(rating => (
-                            <SelectItem key={rating} value={rating}>
-                              {rating}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+             
               <FormField
                 control={form.control}
                 name='plot'
@@ -327,9 +351,7 @@ export default function AddMovieForm () {
             {message && <p className='mt-4 text-green-600'>{message}</p>}
           </Form>
         </CardContent>
-        <CardFooter>
-          <p>Ensure all fields are filled correctly before submitting.</p>
-        </CardFooter>
+       
       </Card>
     </div>
   )
