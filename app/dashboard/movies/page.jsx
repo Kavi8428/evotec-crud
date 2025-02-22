@@ -1,9 +1,34 @@
-import React from 'react'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
 
-export default function page() {
+import React, { Suspense } from 'react'
+import MovieData from './movie-data'
+import { Loader } from 'lucide-react'
+
+export default function MoviePage () {
   return (
-    <div className = "text-background" >
-      Movie Table
+    <div className='text-background container p-4'>
+      <Card>
+        <CardHeader>
+          <CardTitle>Movies Management</CardTitle>
+          <CardDescription>List of movies</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Suspense fallback={
+            <div className='flex justify-center' >
+              <Loader className=' animate-spin duration-2000' />
+            </div>
+          } >
+            <MovieData />
+          </Suspense>
+        </CardContent>
+      </Card>
     </div>
   )
 }
