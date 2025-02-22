@@ -1,101 +1,106 @@
-import Image from "next/image";
+import React from 'react'
+import { getMovies } from '@/lib/apis/server'
+import Image from 'next/image'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Share2, Bookmark, Play } from 'lucide-react'
+import { FaImdb } from 'react-icons/fa'
+import { CiTimer } from 'react-icons/ci'
+import LandingNav from "@/components/ui/landingNav";
 
-export default function Home() {
+export default async function dashboard () {
+  const { body } = await getMovies()
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className='flex flex-col min-h-screen w-full '>
+      <header className='p-2 sm:px-8 md:px-2 lg:px-52 xl:px-52 sticky top-0 z-50' >
+        <LandingNav />
+      </header>
+      {/* Main content with padding-top to account for fixed navbar */}
+      <div className='text-white sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 grid gap-8 p-5'>
+        {body?.length &&
+          body.map(movie => {
+            // console.log(movie)
+            return (
+              <div key={movie._id} className='relative group'>
+                <Card className='bg-gradient-to-b from-black/90 to-black border-0 overflow-hidden'>
+                  <div className='absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10' />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+                  <div className='relative aspect-[3/4]'>
+                    {movie?.poster && (
+                      <Image
+                        src={movie.poster}
+                        alt={movie?.title}
+                        fill
+                        sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                        priority
+                        className='object-cover group-hover:scale-105 transition-transform duration-300'
+                      />
+                    )}
+                  </div>
+
+                  <div className='absolute bottom-0 left-0 right-0 z-20 p-6 space-y-2'>
+                    <CardTitle className='text-xl font-bold bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent'>
+                      {movie?.title}
+                      <i>{`(${movie?.year ?? 'N/A'})`}</i>
+                    </CardTitle>
+
+                    <div className='flex items-center gap-1 w-full text-sm text-gray-400'>
+                      <FaImdb />
+                      <span title='IMDB Rating'>
+                        {movie?.imdb?.rating?.toFixed(1) || 'PG-13'}
+                      </span>
+                      <CiTimer />
+                      <span title='Run Time'>
+                        {(movie?.runtime / 60).toFixed(1) + ' hrs' ||
+                          '2h 49min'}
+                      </span>
+                    </div>
+                    <div className='flex items-center gap-1 text-sm text-gray-400'>
+                      <span>
+                        #{movie?.genres.join('/') || 'Adventure, Drama'}
+                      </span>
+                    </div>
+
+                    <CardDescription className='text-gray-300 line-clamp-3'>
+                      {movie?.plot}
+                    </CardDescription>
+
+                    <div className='flex justify-between items-center gap-1'>
+                      <Button
+                        variant='outline'
+                        className='bg-red-500/10 border-red-500/50  text-white flex items-center gap-2'
+                      >
+                        <Play className='w-4 h-4' /> WATCH TRAILER
+                      </Button>
+
+                      <Button
+                        variant='ghost'
+                        size='icon'
+                        className='text-gray-400 hover:text-black'
+                      >
+                        <Bookmark className='w-5 h-5' />
+                      </Button>
+                      <Button
+                        variant='ghost'
+                        size='icon'
+                        className='text-gray-400 hover:text-black'
+                      >
+                        <Share2 className='w-5 h-5' />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            )
+          })}
+      </div>
     </div>
-  );
+  )
 }

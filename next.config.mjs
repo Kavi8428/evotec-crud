@@ -34,6 +34,16 @@ const nextConfig = {
         hostname: 'img.freepik.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'resizing.flixster.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.pinimg.com',
+        pathname: '/**',
+      },
     ],
   },
 };
