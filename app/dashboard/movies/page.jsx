@@ -17,12 +17,12 @@ export default function MoviePage () {
       <Card>
         <CardHeader>
           <CardTitle>Movies Management</CardTitle>
-          <CardDescription>List of movies</CardDescription>
         </CardHeader>
         <CardContent>
           <Suspense fallback={
-            <div className='flex justify-center' >
-              <Loader className=' animate-spin duration-2000' />
+            <div className='flex justify-center gap-2 ' >
+              <Loader className=' animate-spin duration-2000' /> 
+                Fetching...
             </div>
           } >
             <MovieData />
