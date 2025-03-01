@@ -1,10 +1,9 @@
-import dbConnection from '@/lib/mongodb'
+import {db} from '@/lib/mongodb'
 import { NextResponse } from 'next/server'
 
 export const GET = async () => {
   try {
-    const mongo = await dbConnection();
-    const db = mongo.db("sample_mflix");
+   
     const movies = await db
     .collection('newMovies')
     .find({})

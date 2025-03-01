@@ -1,19 +1,16 @@
-"use client"
+'use client'
 
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
-
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useTransition } from 'react'
-
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -24,8 +21,6 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form'
-
-
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -35,85 +30,67 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-
 import { cn } from '@/lib/utils'
 import { GENRE_OPTIONS, RATING_OPTIONS } from '@/lib/constants'
-import { InsertMovie } from '@/lib/actions/movie'
+import { InsertMovie, UpdateMovie } from '@/lib/actions/movie'
+import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   director: z.string().min(1, 'Director is required'),
-  year: z.string().regex(/^\d{4}$/, 'Year must be a 4-digit number'),
+  year: z.number().refine(val => /^\d{4}$/.test(val), 'Year must be a 4-digit number'),
   genres: z
     .array(z.string())
     .min(1, 'Select at least one genre')
     .max(4, 'Select up to 4 genres'),
   plot: z.string().min(1, 'Enter at least a sentence for the plot'),
-  poster: z.any().optional(),
+  poster: z.string().optional(),
   rating: z.string().min(1, 'Rating is required'),
-  runtime: z.string().min(1, 'Runtime is required')
+  runtime: z.number().min(1, 'Runtime is required')
 })
 
-export default function EditMovieForm ({ open, onCancel }) {
+export default function EditMovieForm({ open, onCancel, movie, onSubmit }) {
   const [isPending, startTransition] = useTransition()
   const [message, setMessage] = useState('')
-  const [selectedGenres, setSelectedGenres] = useState([])
+  const [selectedGenres, setSelectedGenres] = useState(movie.genres || [])
+
+  // Normalize movie data to prevent undefined values
+  const normalizedMovie = {
+    title: movie.title || '',
+    director: String(movie.director ?? ''),
+    year: movie.year || '',
+    genres: movie.genres || [],
+    plot: movie.plot || '',
+    poster: movie.poster || '',
+    rating: movie.rating || '',
+    runtime: movie.runtime || ''
+  }
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: '',
-      director: '',
-      year: '',
-      genres: [],
-      plot: '',
-      poster: '',
-      rating: '',
-      runtime: ''
-    }
+    defaultValues: normalizedMovie
   })
 
-  function onSubmit (values) {
+  useEffect(() => {
+    setSelectedGenres(movie.genres || [])
+    form.reset(normalizedMovie)
+  }, [movie, form])
+
+  function onEditSubmit(values) {
     setMessage('')
     startTransition(async () => {
-      const formData = new FormData()
-      Object.entries(values).forEach(([key, value]) => {
-        formData.append(key, value)
+      onSubmit({
+        ...movie,
+        ...values,
+        id: movie._id.toString()
       })
-
-      let title = formData.get('title')
-      let director = formData.get('director')
-      let year = formData.get('year')
-      let genres = formData.get('genres').split(',')
-      let plot = formData.get('plot')
-      let poster = formData.get('poster')
-      let rating = formData.get('rating')
-      let runtime = formData.get('runtime')
-
-
-      const response = await InsertMovie({
-        title,
-        director,
-        year,
-        genres,
-        plot,
-        poster,
-        rating,
-        runtime
-      })
-      if (response.insertedId) {
-        setMessage('Movie added successfully')
-      } else {
-        setMessage('Failed to add movie')
-      }
     })
   }
 
-  const handleGenreSelect = (genre) => {
+  const handleGenreSelect = genre => {
     const updatedGenres = selectedGenres.includes(genre)
       ? selectedGenres.filter(g => g !== genre)
       : [...selectedGenres, genre].slice(0, 4)
-    
     setSelectedGenres(updatedGenres)
     form.setValue('genres', updatedGenres)
   }
@@ -123,13 +100,15 @@ export default function EditMovieForm ({ open, onCancel }) {
       <Dialog className='text-black' open={open} onOpenChange={onCancel}>
         <DialogContent className='overflow-y-auto max-h-screen'>
           <DialogHeader>
-            <DialogTitle className='text-black font-sans'>Edit Movie</DialogTitle>
+            <DialogTitle className='text-black font-sans'>
+              Edit Movie
+            </DialogTitle>
           </DialogHeader>
           <div className='flex flex-col items-center justify-center h-full'>
             <div className='m-1 w-full max-w-2xl'>
               <Form {...form}>
                 <form
-                  onSubmit={form.handleSubmit(onSubmit)}
+                  onSubmit={form.handleSubmit(onEditSubmit)}
                   className='space-y-2 text-gray-500'
                 >
                   <div className='grid gap-1 w-full sm:grid-cols-1 md:grid-cols-2'>
@@ -160,7 +139,11 @@ export default function EditMovieForm ({ open, onCancel }) {
                             <Input
                               className='w-full'
                               placeholder="Enter director's name"
-                              {...field}
+                              value={field.value ?? ''} // Explicit fallback
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              name={field.name}
+                              ref={field.ref}
                             />
                           </FormControl>
                           <FormMessage />
@@ -178,9 +161,10 @@ export default function EditMovieForm ({ open, onCancel }) {
                           <FormControl>
                             <Input
                               className='w-full'
-                              type='text'
+                              type='number'
                               placeholder='Enter release year (e.g., 2023)'
-                              {...field}
+                              value={field.value ?? ''}
+                              onChange={e => field.onChange(Number(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -197,7 +181,8 @@ export default function EditMovieForm ({ open, onCancel }) {
                             <Input
                               type='text'
                               placeholder='Enter link of image banner'
-                              {...field}
+                              value={field.value ?? ''}
+                              onChange={field.onChange}
                             />
                           </FormControl>
                           <FormMessage />
@@ -217,7 +202,8 @@ export default function EditMovieForm ({ open, onCancel }) {
                               className='w-full'
                               type='number'
                               placeholder='Enter Run Time in Hours'
-                              {...field}
+                              value={field.value ?? ''}
+                              onChange={e => field.onChange(Number(e.target.value))}
                             />
                           </FormControl>
                           <FormMessage />
@@ -263,13 +249,18 @@ export default function EditMovieForm ({ open, onCancel }) {
                           {GENRE_OPTIONS.map(genre => (
                             <Button
                               key={genre}
-                              type="button"
-                              variant={selectedGenres.includes(genre) ? "default" : "secondary"}
-                              size="sm"
+                              type='button'
+                              variant={
+                                selectedGenres.includes(genre)
+                                  ? 'default'
+                                  : 'secondary'
+                              }
+                              size='sm'
                               onClick={() => handleGenreSelect(genre)}
                               className={cn(
-                                "h-8",
-                                selectedGenres.includes(genre) && "bg-blue-100 text-primary-background"
+                                'h-8',
+                                selectedGenres.includes(genre) &&
+                                  'bg-blue-100 text-primary-background'
                               )}
                             >
                               {genre}
@@ -293,7 +284,8 @@ export default function EditMovieForm ({ open, onCancel }) {
                         <FormControl>
                           <Textarea
                             placeholder='Enter movie plot'
-                            {...field}
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
                           />
                         </FormControl>
                         <FormMessage />
@@ -303,10 +295,10 @@ export default function EditMovieForm ({ open, onCancel }) {
 
                   <div className='flex justify-end gap-2'>
                     <Button
-                      type="button"
+                      type='button'
                       variant='secondary'
                       onClick={() => {
-                        form.reset()
+                        form.reset(normalizedMovie)
                         setSelectedGenres([])
                       }}
                       disabled={isPending}
@@ -314,13 +306,11 @@ export default function EditMovieForm ({ open, onCancel }) {
                       Reset Form
                     </Button>
                     <Button type='submit' disabled={isPending}>
-                      {isPending ? 'Adding...' : 'Add Movie'}
+                      {isPending ? 'Updating...' : 'Update Movie'}
                     </Button>
                   </div>
                 </form>
-                {message && (
-                  <p className='mt-4 text-green-600'>{message}</p>
-                )}
+                {message && <p className='mt-4 text-green-600'>{message}</p>}
               </Form>
             </div>
           </div>

@@ -19,7 +19,7 @@ const nextConfig = {
          * Hostname pattern for the remote image URL.
          * The '**' is a wildcard character that matches any subdomain.
          */
-        hostname: '**.media-amazon.com',
+        hostname: 'm.media-amazon.com',
         /**
          * Port number for the remote image URL (optional).
          */

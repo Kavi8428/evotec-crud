@@ -1,12 +1,12 @@
-import dbConnection from '@/lib/mongodb'
+
 import React from 'react'
 import MovieTable from './movie-table'
 import { Button } from '@/components/ui/button'
+import { db } from '@/lib/mongodb'
 
 export default async function MovieData () {
   try {
-    const client = await dbConnection()
-    const db = client.db('sample_mflix')
+
     const response = await db
       .collection('newMovies')
       .find({})

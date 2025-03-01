@@ -1,4 +1,4 @@
-import dbConnection from '@/lib/mongodb'
+import {db} from '@/lib/mongodb'
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcrypt'
 
@@ -14,9 +14,7 @@ export const POST = async req => {
       )
     }
 
-    // Check existing user
-    const mongo = await dbConnection()
-    const db = mongo.db('sample_mflix')
+
     const existingUser = await db.collection('users').findOne({ email })
 
     if (existingUser) {
