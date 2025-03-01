@@ -12,11 +12,14 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 import EditMovieForm from './edit-movie-form'
-import { UpdateMovie } from '@/lib/actions/movie'
+import { DeleteMovie, UpdateMovie } from '@/lib/actions/movie'
 import { useRouter } from 'next/navigation'
+import DeleteMovieDialog from './delete-movie-dialog'
 
 export default function MovieTable({ movies }) {
   const [editingMovie, setEditingMovie] = useState(null)
+  const [deletingMovie, setDeletingMovie] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   const router = useRouter() // Move useRouter here, inside the component body
 
   const HandleEdit = movie => {
@@ -46,8 +49,26 @@ export default function MovieTable({ movies }) {
 
   const HandleDelete = movie => {
     // Implement delete logic here if needed
+    setDeletingMovie(movie);
     console.log('delete movie', movie)
   }
+
+  const HandleDeleteSubmit = async id => {
+    // Implement delete logic here if needed
+    setIsDeleting(true);
+    const response = await DeleteMovie(id);
+    if(response.acknowledged) {
+    console.log('Movie deleted successfully');
+    setIsDeleting(false);
+    setDeletingMovie(null) // Close the delete dialog after submission
+    } else {
+      console.log('Movie deletion failed');
+    }
+    // console.log('response', response);
+    router.refresh() // Use the router instance from the component
+    
+  }
+
 
   return (
     <div>
@@ -108,6 +129,16 @@ export default function MovieTable({ movies }) {
           open={true}
           onSubmit={HandleEditSubmit}
           onCancel={() => setEditingMovie(null)}
+        />
+      )}
+
+      {deletingMovie && (
+        <DeleteMovieDialog
+          movie={deletingMovie}
+          open={true}
+          onClose={() => setDeletingMovie(null)}
+          onConfirm={() => HandleDeleteSubmit(deletingMovie._id)}
+          isLoading={isDeleting}
         />
       )}
     </div>
