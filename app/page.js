@@ -16,7 +16,8 @@ import { CiTimer } from 'react-icons/ci'
 import LandingNav from "@/components/ui/landingNav";
 
 export default async function dashboard () {
-  const { body } = await getMovies()
+  const response = await getMovies()
+  const body = response?.body || []
   return (
     <div className='flex flex-col min-h-screen w-full '>
       <header className='p-2 sm:px-8 md:px-2 lg:px-52 xl:px-52 sticky top-0 z-50' >

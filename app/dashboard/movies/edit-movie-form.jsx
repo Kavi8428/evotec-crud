@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -55,7 +55,7 @@ export default function EditMovieForm({ open, onCancel, movie, onSubmit }) {
   const [selectedGenres, setSelectedGenres] = useState(movie.genres || [])
 
   // Normalize movie data to prevent undefined values
-  const normalizedMovie = {
+  const normalizedMovie = useMemo (() => ({
     title: movie.title || '',
     director: String(movie.director ?? ''),
     year: movie.year || '',
@@ -64,7 +64,7 @@ export default function EditMovieForm({ open, onCancel, movie, onSubmit }) {
     poster: movie.poster || '',
     rating: movie.rating || '',
     runtime: movie.runtime || ''
-  }
+  }), [movie])
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -74,7 +74,7 @@ export default function EditMovieForm({ open, onCancel, movie, onSubmit }) {
   useEffect(() => {
     setSelectedGenres(movie.genres || [])
     form.reset(normalizedMovie)
-  }, [movie, form])
+  }, [movie, form, normalizedMovie])
 
   function onEditSubmit(values) {
     setMessage('')

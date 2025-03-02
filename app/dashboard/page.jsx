@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Film, Users, TrendingUp, Clock } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default function Dashboard() {
   const [movieCount, setMovieCount] = useState(0);
   const [visitorCount, setVisitorCount] = useState(0);
