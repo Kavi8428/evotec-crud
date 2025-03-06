@@ -1,4 +1,5 @@
 import { FileVideo2 , FolderKanban, Clapperboard, Users , Settings } from "lucide-react"
+import Image from "next/image"
 
 import {
   Sidebar,
@@ -16,42 +17,44 @@ const items = [
   {
     title: "Overview",
     url: "/dashboard",
-    icon: FolderKanban,
+    icon: (props) => <FolderKanban {...props} color="red" />,
   },
   {
     title: "Movies",
     url: "/dashboard/movies",
-    icon: Clapperboard,
+    icon: (props) => <Clapperboard {...props} color="red" />,
   },
   {
     title: "Add Movie",
     url: "/dashboard/add-movies",
-    icon: FileVideo2 ,
+    icon: (props) => <FileVideo2 {...props} color="red" />,
   },
   {
     title: "Users",
     url: "/dashboard/users",
-    icon: Users ,
+    icon: (props) => <Users {...props} color="red" />,
   },
   {
     title: "Settings",
     url: "/dashboard/settings",
-    icon: Settings,
+    icon: (props) => <Settings {...props} color="red" />,
   },
 ]
 
 export function AppSidebar() {
   return (
-    <Sidebar >
-      <SidebarContent className =" bg-foreground text-background " >
+    <Sidebar>
+      <SidebarContent className="bg-background text-foreground">
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel className="flex justify-center py-2 my-4">
+            <Image src="/movieHubLogo.png" alt="logo" width={50} height={50} className="rounded-md" />
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1 ps-2 "> 
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <a href={item.url} className="flex items-center space-x-2">
                       <item.icon />
                       <span>{item.title}</span>
                     </a>

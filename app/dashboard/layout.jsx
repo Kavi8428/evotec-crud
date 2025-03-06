@@ -4,14 +4,14 @@ import NavBar from './components/nav-bar'
 
 export default function DashboardLayout({ children }) {
   return (
-    <div className="h-screen flex overflow-hidden">
+    <div className="h-screen flex overflow-hidden bg-background">
       <SidebarProvider>
         <AppSidebar  /> {/* Adjust the width here */}
-        <div className='flex flex-col w-full'>
+        <div className='flex flex-col w-full '>
           <header>
             <NavBar />
           </header>
-          <main className='flex-1 overflow-y-auto bg-foreground'>
+          <main className='flex-1 overflow-y-auto '>
             {children}
           </main>
         </div>

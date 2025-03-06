@@ -52,7 +52,8 @@ import {
   SelectValue
 } from '@/components/ui/select'
 
-import {InsertMovie} from '@/lib/actions/movie'
+import { InsertMovie } from '@/lib/actions/movie'
+import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -70,6 +71,7 @@ const formSchema = z.object({
 export default function AddMovieForm () {
   const [isPending, startTransition] = useTransition()
   const [message, setMessage] = useState('')
+  const router = useRouter() // Move useRouter here, inside the component body
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -90,39 +92,42 @@ export default function AddMovieForm () {
     startTransition(async () => {
       const formData = new FormData()
       Object.entries(values).forEach(([key, value]) => {
-        // console.log(`Key: ${key}, Value: ${value}`) // Debugging line
-        formData.append(key, value);
-      });
-
-      let title = formData.get('title');
-      let director = formData.get('director');
-      let year = formData.get('year');
-      let genres = formData.get('genres').split(','); // Split genres if it's a comma-separated string
-      let plot = formData.get('plot');
-      let poster = formData.get('poster');
-      let rating = formData.get('rating');
-      let runtime = formData.get('runtime');
-
-      // console.log('titele:', title, 'director:', director, 'year:', year, 'genres:', genres, 'plot:', plot, 'banner:', banner, 'rating:', rating); // Debugging line
-
-      const response = await InsertMovie({title, director, year, genres, plot, poster, rating, runtime});
-      if(response.insertedId){
-        setMessage('Movie added successfully');
-      }else{
-        setMessage('Failed to add movie');
+        formData.append(key, value)
+      })
+  
+      let title = formData.get('title')
+      let director = formData.get('director')
+      let year = formData.get('year')
+      let genres = formData.get('genres').split(',')
+      let plot = formData.get('plot')
+      let poster = formData.get('poster')
+      let rating = formData.get('rating')
+      let runtime = formData.get('runtime')
+  
+      const response = await InsertMovie({
+        title,
+        director,
+        year,
+        genres,
+        plot,
+        poster,
+        rating,
+        runtime
+      })
+  
+      if (response && response.insertedId) {
+        setMessage('Movie added successfully')
+        router.push('/dashboard/movies') // Redirect to the movies page after adding a movie
+      } else {
+        setMessage('Failed to add movie')
       }
-      console.log(response); // Debugging line to check the response
-
-      // Now genres should be an array
-
-      
-
+      console.log(response) // Debugging line to check the response
     })
-}
+  }
 
   return (
-    <div className='flex flex-col items-center justify-center h-full'>
-      <Card className=' m-1 sm:w-full md:w-full lg:w-4/6 xl:3/6'>
+    <div className='flex flex-col items-center justify-center  h-full'>
+      <Card className=' m-1 sm:w-full md:w-full lg:w-5/6 xl:4/6 bg-white text-background '>
         <CardHeader>
           <CardTitle>Add a New Movie</CardTitle>
           <CardDescription>
@@ -225,41 +230,40 @@ export default function AddMovieForm () {
                     </FormItem>
                   )}
                 />
-              <FormField
-                control={form.control}
-                name='rating'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Rating</FormLabel>
-                    <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className='w-full'>
-                          <SelectValue placeholder='Select Rating' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {RATING_OPTIONS.map(rating => (
-                            <SelectItem key={rating} value={rating}>
-                              {rating}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+                <FormField
+                  control={form.control}
+                  name='rating'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Rating</FormLabel>
+                      <FormControl>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className='w-full hover:bg-foreground hover:text-background'>
+                            <SelectValue placeholder='Select Rating' />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {RATING_OPTIONS.map(rating => (
+                              <SelectItem key={rating} value={rating}>
+                                {rating}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <FormField
                 control={form.control}
                 name='genres'
                 render={({ field }) => (
-                  <FormItem className='flex flex-col'>
+                  <FormItem className='flex flex-col bg-transparent '>
                     <FormLabel>Genres</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -268,7 +272,7 @@ export default function AddMovieForm () {
                             variant='outline'
                             role='combobox'
                             className={cn(
-                              'w-full justify-between sm:w-full md:w-full',
+                              'w-full justify-between sm:w-full md:w-ful bg-transparent l',
                               !field.value.length && 'text-muted-foreground'
                             )}
                           >
@@ -320,7 +324,7 @@ export default function AddMovieForm () {
                   </FormItem>
                 )}
               />
-             
+
               <FormField
                 control={form.control}
                 name='plot'
@@ -337,21 +341,27 @@ export default function AddMovieForm () {
 
               <div className='flex justify-end'>
                 <Button
-                  variant='outline'
+                  variant='destructive'
                   onClick={() => form.reset()}
                   disabled={isPending}
                 >
                   Reset Form
                 </Button>
-                <Button type='submit' disabled={isPending}>
+                <Button
+                  type='submit'
+                  disabled={isPending}
+                  variant='outline'
+                  className='ml-2 text-background bg-foreground hover:bg-green-600'
+                >
                   {isPending ? 'Adding...' : 'Add Movie'}
                 </Button>
               </div>
             </form>
-            {message && <p className='mt-4 text-green-600'>{message}</p>}
+            {message && (
+              <p className='mt-4 justify-center  text-green-600'>{message}</p>
+            )}
           </Form>
         </CardContent>
-       
       </Card>
     </div>
   )

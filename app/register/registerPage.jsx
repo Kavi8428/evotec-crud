@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2 } from 'lucide-react'
+import { Eye } from 'lucide-react';
+import { EyeOff } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -26,6 +28,8 @@ export default function RegisterPage () {
   const [email, emailHolder] = useState('')
   const [password, passwordHolder] = useState('')
   const [conPassword, conPasswordHolder] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConPassword, setShowConPassword] = useState(false)
 
   const DEFAULT_ERROR = {
     error: false,
@@ -188,24 +192,28 @@ export default function RegisterPage () {
               </div>
               <div className='flex flex-col justify-between gap-1  '>
                 <Label className='text-xs'>Password : </Label>
-                <Input
-                  id='password'
-                  type='password'
-                  className=' w-full text-white  rounded-md'
-                  placeholder='ABC@123'
-                  name='password'
-                  value={password}
-                  onChange={e => {
-                    passwordHolder(e.target.value)
-                  }}
-                ></Input>
+                <div className='relative'>
+                    <Input
+                    id='password'
+                    type={showPassword ? 'text' : 'password'}
+                    className='w-full text-white rounded-md'
+                    placeholder='ABC@123'
+                    name='password'
+                    value={password}
+                    onChange={e => {
+                      passwordHolder(e.target.value)
+                    }}
+                    />
+                    {showPassword ? <EyeOff className='absolute top-2 right-2 text-gray-500 cursor-pointer' onClick={() => setShowPassword(false)} /> : <Eye  className='absolute top-2 right-2 text-gray-500 cursor-pointer' onClick={() => setShowPassword(true)} />}
+                  </div>
               </div>
 
               <div className='flex flex-col justify-between gap-1  '>
                 <Label className='text-xs'>Confirm Password : </Label>
+                <div className='relative'>
                 <Input
                   id='confirmPassword'
-                  type='password'
+                  type={showConPassword ? 'text' : 'password'}
                   className=' w-full text-white  rounded-md'
                   placeholder='ABC@123'
                   name='conPassword'
@@ -213,7 +221,9 @@ export default function RegisterPage () {
                   onChange={e => {
                     conPasswordHolder(e.target.value)
                   }}
-                ></Input>
+                />
+                {showConPassword ? <EyeOff className='absolute top-2 right-2 text-gray-500 cursor-pointer' onClick={() => setShowConPassword(false)} /> : <Eye  className='absolute top-2 right-2 text-gray-500 cursor-pointer' onClick={() => setShowConPassword(true)} />}
+                </div>
               </div>
               <div>
                 {error?.error == true && (

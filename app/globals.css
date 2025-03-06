@@ -8,6 +8,9 @@
     --background: #0a0a0a;
     --foreground: #ededed;
     --primary :  #ff0000;
+    --darkmode: #000000;
+    --lightmode: #ffffff;
+    
   }
 }
 

@@ -44,6 +44,11 @@ const nextConfig = {
         hostname: 'i.pinimg.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.baiscope.lk',
+        pathname: '/**',
+      },
     ],
   },
 };

@@ -10,9 +10,9 @@ export default async function register () {
      headers : await headers()
   })
 
-  if(session){
-    redirect('/dashboard')
-  }
+  // if(session){
+  //   redirect('/dashboard')
+  // }
   
 
 

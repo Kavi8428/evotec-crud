@@ -73,19 +73,19 @@ export default function MovieTable({ movies }) {
   return (
     <div>
       <Table>
-        <TableHeader className='sticky top-0 bg-white z-10'>
-          <TableRow className='font-bold'>
-            <TableHead># Cover</TableHead>
-            <TableHead>Movie Title</TableHead>
-            <TableHead>Movie Year</TableHead>
-            <TableHead>Rated</TableHead>
-            <TableHead>Genre</TableHead>
-            <TableHead className='text-center'>Actions</TableHead>
+        <TableHeader className='sticky top-0 rounded-sm bg-orange-950  z-10'>
+          <TableRow className='font-bold  '>
+            <TableHead className="text-foreground"  ># Cover</TableHead>
+            <TableHead className="text-foreground" >Movie Title</TableHead>
+            <TableHead className="text-foreground" >Movie Year</TableHead>
+            <TableHead className="text-foreground" > Rated</TableHead>
+            <TableHead className="text-foreground" >Genre</TableHead>
+            <TableHead className='text-center text-foreground '>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {movies.map((movie, index) => (
-            <TableRow className='h-20  ' key={`${movie._id}-${index}`}>
+            <TableRow className='h-20 text-background hover:bg-slate-200  ' key={`${movie._id}-${index}`}>
               <TableCell className='w-20'> 
                 <Image
                   src={movie.poster}
@@ -101,7 +101,7 @@ export default function MovieTable({ movies }) {
               <TableCell>{movie.rating ?? 'N/A'}</TableCell>
               <TableCell>{movie.genres.toString() ?? 'N/A'}</TableCell>
               <TableCell>
-                <div className='flex justify-center space-x-2'>
+                <div className='flex justify-center text-background space-x-2'>
                   <Button
                     variant='outline'
                     size='sm'
