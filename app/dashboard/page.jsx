@@ -1,8 +1,10 @@
+// Dashboard.jsx
 'use client'
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Film, Users, TrendingUp, Clock } from "lucide-react";
+import StatsChart from "@/app/dashboard/components/StatsChart";
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +15,6 @@ export default function Dashboard() {
   const [avgWatchTime, setAvgWatchTime] = useState(0);
 
   useEffect(() => {
-    // Simulate loading with counting animation
     const duration = 2000; // 2 seconds
     const steps = 50;
     const movieTarget = 120;
@@ -75,14 +76,9 @@ export default function Dashboard() {
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex flex-col space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-4xl font-bold tracking-tight">Movie Hub Dashboard</h1>
-          <div className="text-sm text-gray-500">Last updated: {new Date().toLocaleString()}</div>
-        </div>
-        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow duration-200">
+            <Card key={index} className="hover:shadow-lg text-background bg-foreground transition-shadow duration-200">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
                 <div className={`${stat.bgColor} ${stat.color} p-2 rounded-full`}>
@@ -98,6 +94,16 @@ export default function Dashboard() {
             </Card>
           ))}
         </div>
+
+        {/* Chart Section */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Statistics Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <StatsChart stats={stats} />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

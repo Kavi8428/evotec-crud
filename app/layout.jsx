@@ -15,7 +15,7 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title: "HOME",
+  title: "MOVIE HUB",
   description: "Movie HUB",
 };
 
